@@ -14,7 +14,7 @@ class InMemoryStorage(Storage):
 
 
 class TestApplication:
-    def test_list_all_resources(self):
+    def test_list_all_resources_returns_all_my_resources(self):
         my_resources_list = [
             Resource("A"),
             Resource("B")
