@@ -2,3 +2,4 @@ venv
 *.iml
 .pytets_cache
 .idea
+target/
