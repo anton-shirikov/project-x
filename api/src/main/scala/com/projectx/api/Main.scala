@@ -9,9 +9,11 @@ import akka.stream.ActorMaterializer
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
-import scala.util.{Failure, Success}
 
 object Main {
+
+  import cats.effect._
+  import cats.syntax.all._
 
   private val Port = 9090
 
@@ -22,14 +24,13 @@ object Main {
   private val logger = LoggerFactory.getLogger(getClass)
 
   def main(args: Array[String]): Unit = {
-    Http().bindAndHandle(routes, "localhost", Port).onComplete {
-      case Success(binding) => logger.info("API server started on port {}", binding.localAddress.getPort);
-      case Failure(ex) => logger.error("Failed to start API server", ex)
-    }
+    IO.fromFuture(IO(Http().bindAndHandle(routes, "localhost", Port))).map { binding =>
+      logger.info("API server started on port {}", binding.localAddress.getPort)
+    }.handleError(ex => logger.error("Failed to start API server", ex)).unsafeRunSync()
   }
 
   private def routes: Route =
-    pathPrefix("health") {
+    path("health") {
       get {
         complete(HttpEntity(ContentTypes.`application/json`, """{"status": "healthy"}"""))
       }

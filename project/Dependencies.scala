@@ -7,6 +7,8 @@ object Dependencies {
     val AkkaHttp = "10.1.5"
     val ScalaTest = "3.0.5"
     val Logback = "1.2.3"
+    val CatsEffect = "1.0.0"
+    val Cats = "1.4.0"
   }
 
   val Runtime = Seq(
@@ -14,8 +16,9 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-stream" % Version.Akka,
     "com.typesafe.akka" %% "akka-http" % Version.AkkaHttp,
     "com.typesafe.akka" %% "akka-slf4j" % Version.Akka,
-    "ch.qos.logback" % "logback-classic" % Version.Logback
-
+    "ch.qos.logback" % "logback-classic" % Version.Logback,
+    "org.typelevel" %% "cats-effect" % Version.CatsEffect,
+    "org.typelevel" %% "cats-core" % Version.Cats
   )
 
   val TestDependencies = Seq(
