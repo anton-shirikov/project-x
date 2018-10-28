@@ -6,6 +6,7 @@ import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import cats.effect.concurrent.Ref
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
@@ -34,6 +35,6 @@ object Main {
       get {
         complete(HttpEntity(ContentTypes.`application/json`, """{"status": "healthy"}"""))
       }
-    } ~ Application.routes(MyResources(List.empty))
+    } ~ Application.routes(Ref.of[IO, MyResources](MyResources(List.empty)).unsafeRunSync())
 
 }

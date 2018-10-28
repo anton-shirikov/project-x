@@ -2,6 +2,8 @@ package com.projectx.api
 
 import akka.http.scaladsl.testkit.ScalatestRouteTest
 import akka.http.scaladsl.server.Route
+import cats.effect.IO
+import cats.effect.concurrent.Ref
 import com.projectx.api.Entry.TextEntry
 import org.scalatest.{FlatSpec, Matchers}
 
@@ -21,10 +23,18 @@ class ApplicationSpec extends FlatSpec with Matchers with ScalatestRouteTest {
     }
   }
 
+  it should "add new entry" in new Fixture {
+    Post("/resources", """{"TextEntry":{"text":"some text","tags":[]}}""") ~> routes
+
+    Get("/resources") ~> routes ~> check {
+      responseAs[String] shouldEqual """{"entries":[{"TextEntry":{"text":"some text","tags":[]}}]}"""
+    }
+  }
+
   class Fixture(entries: Entry*) {
 
-    def routes: Route = {
-      Application.routes(MyResources(entries.toList))
+    val routes: Route = {
+      Application.routes(Ref.of[IO, MyResources](MyResources(entries.toList)).unsafeRunSync())
     }
 
   }
