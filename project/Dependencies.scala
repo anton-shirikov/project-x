@@ -9,6 +9,8 @@ object Dependencies {
     val Logback = "1.2.3"
     val CatsEffect = "1.0.0"
     val Cats = "1.4.0"
+    val Circe = "0.10.0"
+    val AkkaHttpCirce = "1.22.0"
   }
 
   val Runtime = Seq(
@@ -18,11 +20,19 @@ object Dependencies {
     "com.typesafe.akka" %% "akka-slf4j" % Version.Akka,
     "ch.qos.logback" % "logback-classic" % Version.Logback,
     "org.typelevel" %% "cats-effect" % Version.CatsEffect,
-    "org.typelevel" %% "cats-core" % Version.Cats
+    "org.typelevel" %% "cats-core" % Version.Cats,
+    "io.circe" %% "circe-core" % Version.Circe,
+    "io.circe" %% "circe-generic-extras" % Version.Circe,
+    "io.circe" %% "circe-parser" % Version.Circe,
+    "io.circe" %% "circe-java8" % Version.Circe,
+    "de.heikoseeberger" %% "akka-http-circe" % Version.AkkaHttpCirce
+
   )
 
   val TestDependencies = Seq(
-    "org.scalatest" %% "scalatest" % Version.ScalaTest % Test
+    "org.scalatest" %% "scalatest" % Version.ScalaTest % Test,
+    "com.typesafe.akka" %% "akka-http-testkit" % Version.AkkaHttp % Test
+
   )
 
   val All: Seq[ModuleID] = TestDependencies ++ Runtime

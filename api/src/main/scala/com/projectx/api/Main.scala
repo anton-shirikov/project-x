@@ -34,6 +34,6 @@ object Main {
       get {
         complete(HttpEntity(ContentTypes.`application/json`, """{"status": "healthy"}"""))
       }
-    }
+    } ~ Application.routes(MyResources(List.empty))
 
 }
