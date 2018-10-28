@@ -1,11 +1,9 @@
+inThisBuild(scalaVersion := "2.12.7")
+
 lazy val api = project
   .in(file("api"))
   .settings(
     name := "api",
     version := "1.0-SNAPSHOT",
-    libraryDependencies ++= testDependencies
+    libraryDependencies ++= Dependencies.All
   )
-
-def testDependencies = Seq(
-  "org.scalatest" %% "scalatest" % "3.0.4" % Test
-)
