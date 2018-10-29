@@ -1,4 +1,5 @@
-inThisBuild(scalaVersion := "2.12.7")
+inThisBuild(Seq(scalaVersion := "2.12.7", scalacOptions += "-Ypartial-unification"))
+
 
 lazy val api = project
   .in(file("api"))

@@ -14,18 +14,52 @@ class MyResourcesSpec extends FlatSpec with Matchers {
     updatedResources.entries should contain(newEntry)
   }
 
-  "findEntriesByTag" should "return all entries for specific tag" in {
-    val aTag = Tag("Name", "value")
-    val entries = List(
-      TextEntry("entry"),
-      TextEntry("another entry", Set(aTag, Tag("key", "value"))),
-      TextEntry("yet another entry", Set(aTag))
-    )
+  "findEntriesByTags" should "return nothing when entries with specified tags are not found" in new Fixture {
+    val searchTag = Tag("tag1", "value")
     val myResources = MyResources(entries)
 
-    val results = MyResources.findEntriesByTag(aTag)(myResources)
+    val results = MyResources.findEntriesByTags(Set(searchTag))(myResources)
 
-    results shouldEqual entries.tail
+    results shouldBe empty
   }
+
+  it should "return all entries for specific tag" in new Fixture {
+    val searchTag = Tag("tag1", "value")
+    val entriesWithSearchedTags = List(
+      TextEntry("entry with tag1", Set(searchTag)),
+      TextEntry("another entry with tag1", Set(searchTag, Tag("irrelavent", "val")))
+    )
+    val myResources = MyResources(entries ++ entriesWithSearchedTags)
+
+    val results = MyResources.findEntriesByTags(Set(searchTag))(myResources)
+
+    results shouldEqual entriesWithSearchedTags
+  }
+
+  it should "only return entries that contain all tags" in new Fixture {
+    val searchTag1 = Tag("tag1", "value")
+    val searchTag2 = Tag("tag2", "value")
+    val entriesWithSearchedTags = List(
+      TextEntry("entry with tag1 and tag2", Set(searchTag1, searchTag2)),
+      TextEntry("another entry with tag1, tag2 and other tags", Set(searchTag1, searchTag2, Tag("irrelavent", "val")))
+    )
+    val allEntities = entriesWithSearchedTags ++ entries ++ List(
+      TextEntry("entry with tag1", Set(searchTag1)),
+      TextEntry("entry with tag2", Set(searchTag2))
+    )
+    val myResources = MyResources(entries ++ entriesWithSearchedTags)
+
+    val results = MyResources.findEntriesByTags(Set(searchTag1, searchTag2))(myResources)
+
+    results shouldEqual entriesWithSearchedTags
+  }
+
+  class Fixture {
+    val entries = List(
+      TextEntry("entry without tags"),
+      TextEntry("entry with some tag", Set(Tag("irrelevant", "value"))),
+    )
+  }
+
 
 }

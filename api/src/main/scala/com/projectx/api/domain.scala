@@ -1,5 +1,6 @@
 package com.projectx.api
 
+// Annotations / Labels vs Tags (key/value vs pure value)
 case class Tag(name: String, value: String)
 
 sealed trait Entry {
@@ -18,8 +19,8 @@ object MyResources {
     MyResources(resource :: myResources.entries)
   }
 
-  def findEntriesByTag(tag: Tag)(myResources: MyResources): List[Entry] = {
-    myResources.entries.filter(_.tags.contains(tag))
+  def findEntriesByTags(tags: Set[Tag])(myResources: MyResources): List[Entry] = {
+    myResources.entries.filter(e => tags.diff(e.tags).isEmpty)
   }
 
 }

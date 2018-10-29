@@ -25,16 +25,18 @@ object Main {
   private val logger = LoggerFactory.getLogger(getClass)
 
   def main(args: Array[String]): Unit = {
-    IO.fromFuture(IO(Http().bindAndHandle(routes, "localhost", Port))).map { binding =>
-      logger.info("API server started on port {}", binding.localAddress.getPort)
-    }.handleError(ex => logger.error("Failed to start API server", ex)).unsafeRunSync()
+    (for {
+      myResources <- Ref.of[IO, MyResources](MyResources(List.empty))
+      binding <- IO.fromFuture(IO(Http().bindAndHandle(routes(myResources), "localhost", Port)))
+      _ = logger.info("API server started on port {}", binding.localAddress.getPort)
+    } yield ()).handleError(ex => logger.error("Failed to start API server", ex)).unsafeRunSync()
   }
 
-  private def routes: Route =
+  private def routes(myResources: Ref[IO, MyResources]): Route =
     path("health") {
       get {
         complete(HttpEntity(ContentTypes.`application/json`, """{"status": "healthy"}"""))
       }
-    } ~ Application.routes(Ref.of[IO, MyResources](MyResources(List.empty)).unsafeRunSync())
+    } ~ Application.routes(myResources)
 
 }
