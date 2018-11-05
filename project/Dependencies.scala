@@ -11,6 +11,7 @@ object Dependencies {
     val Cats = "1.4.0"
     val Circe = "0.10.0"
     val AkkaHttpCirce = "1.22.0"
+    val Fs2 = "1.0.0"
   }
 
   val Runtime = Seq(
@@ -25,7 +26,9 @@ object Dependencies {
     "io.circe" %% "circe-generic-extras" % Version.Circe,
     "io.circe" %% "circe-parser" % Version.Circe,
     "io.circe" %% "circe-java8" % Version.Circe,
-    "de.heikoseeberger" %% "akka-http-circe" % Version.AkkaHttpCirce
+    "de.heikoseeberger" %% "akka-http-circe" % Version.AkkaHttpCirce,
+    "co.fs2" %% "fs2-core" % Version.Fs2, 
+    "co.fs2" %% "fs2-io" % Version.Fs2
 
   )
 

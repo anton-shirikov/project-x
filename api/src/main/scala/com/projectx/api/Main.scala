@@ -1,22 +1,27 @@
 package com.projectx.api
 
+import java.nio.file.Paths
+
 import akka.actor.ActorSystem
 import akka.http.scaladsl.Http
 import akka.http.scaladsl.model.{ContentTypes, HttpEntity}
 import akka.http.scaladsl.server.Route
 import akka.http.scaladsl.server.Directives._
 import akka.stream.ActorMaterializer
+import cats.effect.IOApp
 import cats.effect.concurrent.Ref
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.ExecutionContext
+import scala.concurrent.duration._
 
-object Main {
+object Main extends IOApp {
 
   import cats.effect._
   import cats.syntax.all._
 
   private val Port = 9090
+  private val Path = Paths.get("/home/elama/project-x/data.json")
 
   private implicit val system: ActorSystem = ActorSystem()
   private implicit val materializer: ActorMaterializer = ActorMaterializer()
@@ -24,12 +29,13 @@ object Main {
 
   private val logger = LoggerFactory.getLogger(getClass)
 
-  def main(args: Array[String]): Unit = {
+  override def run(args: List[String]): IO[ExitCode] = {
     (for {
-      myResources <- Ref.of[IO, MyResources](MyResources(List.empty))
+      myResources <- Storage.restore(Path)
       binding <- IO.fromFuture(IO(Http().bindAndHandle(routes(myResources), "localhost", Port)))
       _ = logger.info("API server started on port {}", binding.localAddress.getPort)
-    } yield ()).handleError(ex => logger.error("Failed to start API server", ex)).unsafeRunSync()
+      _ <- Storage.runPeriodicalSyncToFile(Path, myResources, 1.second)
+    } yield ()).handleError(ex => logger.error("Failed to start API server", ex)).as(ExitCode.Success)
   }
 
   private def routes(myResources: Ref[IO, MyResources]): Route =
