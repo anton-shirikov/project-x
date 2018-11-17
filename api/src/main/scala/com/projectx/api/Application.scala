@@ -1,6 +1,7 @@
 package com.projectx.api
 
 import akka.http.scaladsl.model.StatusCodes
+import akka.http.scaladsl.model.headers._
 import akka.http.scaladsl.server.Directives._
 import akka.http.scaladsl.server.Route
 import cats.effect.IO
@@ -15,23 +16,25 @@ object Application {
   import Marshalling._
 
   def routes(myResources: Ref[IO, MyResources]): Route =
-    pathPrefix("resources") {
-      path("entries") {
-        (get & parameter("tag".as[String].*)) { requestedTags =>
-          val io = for {
-            resources <- myResources.get
-            tags <- parseTags(requestedTags)
-          } yield MyResources.findEntriesByTags(tags)(resources)
+    respondWithHeader(`Access-Control-Allow-Origin`.*) {
+      pathPrefix("resources") {
+        path("entries") {
+          (get & parameter("tag".as[String].*)) { requestedTags =>
+            val io = for {
+              resources <- myResources.get
+              tags <- parseTags(requestedTags)
+            } yield MyResources.findEntriesByTags(tags)(resources)
 
-          onComplete(io.unsafeToFuture()) {
-            case Success(result) => complete(result)
-            case Failure(_) => complete(StatusCodes.BadRequest, "Invalid request")
+            onComplete(io.unsafeToFuture()) {
+              case Success(result) => complete(result)
+              case Failure(_) => complete(StatusCodes.BadRequest, "Invalid request")
+            }
           }
+        } ~ get {
+          complete(myResources.get.unsafeToFuture())
+        } ~ (post & entity(as[Entry])) { entry =>
+          complete(myResources.update(MyResources.add(entry)).map(_ => "ok").unsafeToFuture())
         }
-      } ~ get {
-        complete(myResources.get.unsafeToFuture())
-      } ~ (post & entity(as[Entry])) { entry =>
-        complete(myResources.update(MyResources.add(entry)).map(_ => "ok").unsafeToFuture())
       }
     }
 

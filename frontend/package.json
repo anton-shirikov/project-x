@@ -1,0 +1,30 @@
+{
+  "name": "frontend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/jest": "^23.3.3",
+    "awesome-typescript-loader": "^5.2.1",
+    "file-loader": "2.0.0",
+    "jest": "^23.6.0",
+    "ts-jest": "^23.10.3",
+    "typescript": "^3.1.1",
+    "webpack": "^4.20.2",
+    "webpack-cli": "^3.1.2",
+    "webpack-dev-server": "^3.1.9"
+  },
+  "dependencies": {
+    "@types/react": "^16.4.14",
+    "@types/axios": "0.14.0",
+    "@types/react-dom": "^16.0.8",
+    "react": "^16.5.2",
+    "axios": "0.18.0",
+    "react-dom": "^16.5.2"
+  }
+}
